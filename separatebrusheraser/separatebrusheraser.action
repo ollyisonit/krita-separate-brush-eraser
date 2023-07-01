@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ActionCollection version="2" name="Scripts">
+    <Actions category="Scripts">
+        <text>Separate Brush and Eraser</text>
+
+        <Action name="dninosores_activate_brush">
+            <icon></icon>
+            <text>Activate Brush</text>
+            <whatsThis>Activates brush tool as if separate from eraser.</whatsThis>
+            <toolTip>Activates brush tool as if separate from eraser.</toolTip>
+            <iconText></iconText>
+            <shortcut>s</shortcut>
+            <isCheckable>false</isCheckable>
+            <statusTip></statusTip>
+        </Action>
+
+        <Action name="dninosores_activate_eraser">
+            <icon></icon>
+            <text>Activate Eraser</text>
+            <whatsThis>Activates eraser tool as if separate from eraser.</whatsThis>
+            <toolTip>Activates eraser tool as if separate from eraser.</toolTip>
+            <iconText></iconText>
+            <shortcut>d</shortcut>
+            <isCheckable>false</isCheckable>
+            <statusTip></statusTip>
+        </Action>
+    </Actions>
+</ActionCollection>

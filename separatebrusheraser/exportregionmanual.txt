@@ -1,3 +1,0 @@
-Adds "Export Region" action to file menu. 
-If part of the document is selected, it will export the selection. 
-If nothing is selected, it will export everything in the currently selected layer's bounding box.

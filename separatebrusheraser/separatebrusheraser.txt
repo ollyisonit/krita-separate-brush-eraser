@@ -1,0 +1,1 @@
+Adds shortcuts to activate brush and eraser as separate tools.

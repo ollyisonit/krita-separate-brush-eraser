@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Service
 ServiceTypes=Krita/PythonPlugin
-X-KDE-Library=exportregion
+X-KDE-Library=separatebrusheraser
 X-Python-2-Compatible=false
-X-Krita-Manual=exportregionmanual.txt
-Name=Export Region
-Comment=Adds "Export Region" option to file menu that allows you to export a selected region of your document
+X-Krita-Manual=separatebrusheraser.txt
+Name=Separate Brush and Eraser
+Comment=Creates hotkeys that treat brush and eraser like separate tools.
