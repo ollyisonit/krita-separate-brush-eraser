@@ -12,11 +12,21 @@ class SeparateBrushEraserExtension(Extension):
     def __init__(self, parent):
         super().__init__(parent)
 
+    def switch_to_brush(self):
+        Krita.instance().action("KritaShape/KisToolBrush").trigger()
+
+    def set_eraser_mode(self, is_on):
+        kritaEraserAction = Application.action("erase_action")
+        if kritaEraserAction.isChecked() != is_on:
+            kritaEraserAction.trigger()
+
     def activate_brush(self):
-        pass
+        self.switch_to_brush()
+        self.set_eraser_mode(False)
 
     def activate_eraser(self):
-        pass
+        self.switch_to_brush()
+        self.set_eraser_mode(True)
 
     def setup(self):
         pass
