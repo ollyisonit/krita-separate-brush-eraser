@@ -9,7 +9,6 @@
             <whatsThis>Activates brush tool as if separate from eraser.</whatsThis>
             <toolTip>Activates brush tool as if separate from eraser.</toolTip>
             <iconText></iconText>
-            <shortcut>s</shortcut>
             <isCheckable>false</isCheckable>
             <statusTip></statusTip>
         </Action>
@@ -20,7 +19,6 @@
             <whatsThis>Activates eraser tool as if separate from eraser.</whatsThis>
             <toolTip>Activates eraser tool as if separate from eraser.</toolTip>
             <iconText></iconText>
-            <shortcut>d</shortcut>
             <isCheckable>false</isCheckable>
             <statusTip></statusTip>
         </Action>
