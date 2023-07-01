@@ -32,4 +32,4 @@ class SeparateBrushEraserExtension(Extension):
         activate_eraser_action.triggered.connect(self.activate_eraser)
 
 
-Krita.instance().addExtension(ExportRegionExtension(Krita.instance()))
+Krita.instance().addExtension(SeparateBrushEraserExtension(Krita.instance()))
