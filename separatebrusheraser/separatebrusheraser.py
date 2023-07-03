@@ -3,6 +3,7 @@ from krita import *
 from PyQt5.QtWidgets import QWidget, QAction
 from functools import partial
 from pprint import pprint
+from .api_krita import Krita as KritaAPI
 
 BRUSH_ACTION = "dninosores_activate_brush"
 ERASE_ACTION = "dninosores_activate_eraser"
@@ -11,7 +12,49 @@ BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
 
 
+class BrushSettings:
+    preset = None
+    size = None
+    flow = None
+    opacity = None
+
+    def loadSettings(self):
+        self.preset = KritaAPI.get_active_view().brush_preset
+        self.size = KritaAPI.get_active_view().brush_size
+        self.flow = KritaAPI.get_active_view().flow
+        self.opacity = KritaAPI.get_active_view().opacity
+
+    def applySettings(self):
+        KritaAPI.get_active_view().brush_preset = self.preset
+        KritaAPI.get_active_view().brush_size = self.size
+        KritaAPI.get_active_view().flow = self.flow
+        KritaAPI.get_active_view().opacity = self.opacity
+
+
+class BrushState:
+    # Store a brush state for each view
+    eraser_on: bool = False
+    brush_settings: BrushSettings = None
+    eraser_settings: BrushSettings = None
+
+    def apply():
+        # Change the brush to match the settings stored in here
+        # Also if the brush switches from eraser, store the eraser settings and same for brush
+        # Then return the new brush state I guess
+        # Maybe we should just have this method straight up apply the settings as stated
+        # And make a different method for tracking what brush_settings and eraser_settings should be?
+        # Maybe this method should take in whether the eraser should be on or off, and then it can handle everything else from there
+        # Since you can look at the current state of the brush and figure out if the state is changing or not
+        # Then apply / save presets if you're switching the state and not do that otherwise
+        # Then you can just call this method anywhere you need to set the eraser to be either on or off
+        # And it will just exit if the eraser is already in the right state.
+        pass
+
+
 class SeparateBrushEraserExtension(Extension):
+    brush_settings: dict[str, BrushSettings] = {}
+    eraser_settings: dict[str, BrushSettings] = {}
+
     mode = BRUSH_MODE
     brush_active_tool = False
 
@@ -26,8 +69,28 @@ class SeparateBrushEraserExtension(Extension):
         return Application.action("erase_action").isChecked()
 
     def set_eraser_mode(self, is_on):
+        # Toggles eraser if it isn't in the right state
         if self.eraser_active() != is_on:
             Application.action("erase_action").trigger()
+
+            # (This may not be the right place to check for this)
+            # It's possible to have a situation where you have the brush tool active but then you apply a brush preset that turns on the eraser
+            # Or you have the eraser active but you apply a brush preset that turns on the brush
+            # I actually think the best way around this might be to, each time the eraser is toggled, check that the eraser's status matches the one stored in here
+            # Then if it doesn't match, set it back
+            # Just generally, we need to figure out how we want this to behave when you toggle the eraser manually by clicking on the eraser icon, as well as when the eraser is
+            # activated by a tool preset
+            # I think ideally the tool preset should not affect the eraser status, when you activate a preset it should just not change the eraser
+            # When you click the eraser icon it should switch to the eraser tool as if you pressed D, which could prove challenging because that would mean we have to infiltrate
+            # the top bar
+            # So in general calling the "erase_action" should set the eraser to match whatever value is stored here, meaning this plugin has full control over the eraser
+            # There could also be another "toggle_eraser" action that essentially copies the brush settings to the eraser or vice versa
+
+            # Implement the straight-line action manually as well
+
+            # Toggles eraser again if applying presets scrambled things
+            if self.eraser_active() != is_on:
+                Application.action("erase_action").trigger()
 
     def activate_brush(self):
         self.mode = BRUSH_MODE
