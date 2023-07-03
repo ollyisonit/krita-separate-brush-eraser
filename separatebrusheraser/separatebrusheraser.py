@@ -7,32 +7,53 @@ from pprint import pprint
 BRUSH_ACTION = "dninosores_activate_brush"
 ERASE_ACTION = "dninosores_activate_eraser"
 MENU_LOCATION = "tools/scripts/brush and eraser"
+BRUSH_MODE = "BRUSH"
+ERASER_MODE = "ERASER"
 
 
 class SeparateBrushEraserExtension(Extension):
+    mode = BRUSH_MODE
+    brush_active_tool = False
+
     def __init__(self, parent):
         super().__init__(parent)
 
     def switch_to_brush(self):
         Krita.instance().action("KritaShape/KisToolBrush").trigger()
+        self.set_brush_settings()
+
+    def eraser_active(self):
+        return Application.action("erase_action").isChecked()
 
     def set_eraser_mode(self, is_on):
-        kritaEraserAction = Application.action("erase_action")
-        if kritaEraserAction.isChecked() != is_on:
-            kritaEraserAction.trigger()
+        if self.eraser_active() != is_on:
+            Application.action("erase_action").trigger()
 
     def activate_brush(self):
+        self.mode = BRUSH_MODE
         self.switch_to_brush()
-        self.set_eraser_mode(False)
 
     def activate_eraser(self):
+        self.mode = ERASER_MODE
         self.switch_to_brush()
-        self.set_eraser_mode(True)
+
+    def set_brush_settings(self):
+        """Assuming brush is the current tool, sets brush settings to match current state."""
+        if self.mode == BRUSH_MODE:
+            self.set_eraser_mode(False)
+        elif self.mode == ERASER_MODE:
+            self.set_eraser_mode(True)
 
     def on_brush_toggled(self, toggled):
-        # When we toggle the brush off and switch to a different tool
-        # The eraser should be disabled
-        if not toggled:
+        brush_active_tool = toggled
+        # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
+        if toggled:
+            self.set_brush_settings()
+        else:
+            if self.eraser_active():
+                self.mode == ERASER_MODE
+            else:
+                self.mode == BRUSH_MODE
             self.set_eraser_mode(False)
 
     def setup(self):
