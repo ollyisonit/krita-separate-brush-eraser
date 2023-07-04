@@ -143,6 +143,11 @@ class SeparateBrushEraserExtension(Extension):
 
     def on_eraser_button_clicked(self, toggled):
         print(f"ERASER BUTTON CLICKED {toggled}\n\n\n\n\n\n\n")
+        self.verify_eraser_state()
+        if toggled:
+            self.activate_eraser()
+        else:
+            self.activate_brush()
 
     def on_eraser_button_toggled(self, toggled):
         print(f"ERASER BUTTON TOGGLED TO {toggled}")
