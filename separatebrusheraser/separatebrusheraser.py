@@ -1,4 +1,3 @@
-# type: ignore
 from krita import *
 from PyQt5.QtWidgets import QWidget, QAction
 from functools import partial
@@ -11,24 +10,30 @@ MENU_LOCATION = "tools/scripts/brush and eraser"
 BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
 
+ERASER_BUTTON_TOOLTIP = "Set eraser mode"
+
+DEBUG = True
+
+
+def print_dbg(msg):
+    if DEBUG:
+        print(msg)
+
 
 class BrushSettings:
-    preset = None
-    size = None
-    flow = None
-    opacity = None
-
     def loadSettings(self):
         self.preset = KritaAPI.get_active_view().brush_preset
         self.size = KritaAPI.get_active_view().brush_size
         self.flow = KritaAPI.get_active_view().flow
         self.opacity = KritaAPI.get_active_view().opacity
+        return self
 
     def applySettings(self):
         KritaAPI.get_active_view().brush_preset = self.preset
         KritaAPI.get_active_view().brush_size = self.size
         KritaAPI.get_active_view().flow = self.flow
         KritaAPI.get_active_view().opacity = self.opacity
+        return self
 
 
 class BrushState:
@@ -37,87 +42,109 @@ class BrushState:
     brush_settings: BrushSettings = None
     eraser_settings: BrushSettings = None
 
-    def apply():
-        # Change the brush to match the settings stored in here
-        # Also if the brush switches from eraser, store the eraser settings and same for brush
-        # Then return the new brush state I guess
-        # Maybe we should just have this method straight up apply the settings as stated
-        # And make a different method for tracking what brush_settings and eraser_settings should be?
-        # Maybe this method should take in whether the eraser should be on or off, and then it can handle everything else from there
-        # Since you can look at the current state of the brush and figure out if the state is changing or not
-        # Then apply / save presets if you're switching the state and not do that otherwise
-        # Then you can just call this method anywhere you need to set the eraser to be either on or off
-        # And it will just exit if the eraser is already in the right state.
-        pass
-
 
 class SeparateBrushEraserExtension(Extension):
-    brush_settings: dict[str, BrushSettings] = {}
-    eraser_settings: dict[str, BrushSettings] = {}
-
-    mode = BRUSH_MODE
-    brush_active_tool = False
+    brush_state = None
 
     def __init__(self, parent):
         super().__init__(parent)
 
     def switch_to_brush(self):
         Krita.instance().action("KritaShape/KisToolBrush").trigger()
-        self.set_brush_settings()
 
     def eraser_active(self):
         return Application.action("erase_action").isChecked()
 
-    def set_eraser_mode(self, is_on):
-        # Toggles eraser if it isn't in the right state
-        if self.eraser_active() != is_on:
-            Application.action("erase_action").trigger()
+    def get_current_brush_state(self):
+        if (
+            not KritaAPI.get_active_view()
+            or not Application.activeWindow().activeView().currentBrushPreset()
+        ):
+            return None
+        if self.brush_state:
+            return self.brush_state
+        else:
+            current_state = BrushState()
+            current_state.eraser_on = self.eraser_active()
+            current_state.brush_settings = BrushSettings().loadSettings()
+            current_state.eraser_settings = BrushSettings().loadSettings()
+            self.brush_state = current_state
+            return current_state
 
-            # (This may not be the right place to check for this)
-            # It's possible to have a situation where you have the brush tool active but then you apply a brush preset that turns on the eraser
-            # Or you have the eraser active but you apply a brush preset that turns on the brush
-            # I actually think the best way around this might be to, each time the eraser is toggled, check that the eraser's status matches the one stored in here
-            # Then if it doesn't match, set it back
-            # Just generally, we need to figure out how we want this to behave when you toggle the eraser manually by clicking on the eraser icon, as well as when the eraser is
-            # activated by a tool preset
-            # I think ideally the tool preset should not affect the eraser status, when you activate a preset it should just not change the eraser
-            # When you click the eraser icon it should switch to the eraser tool as if you pressed D, which could prove challenging because that would mean we have to infiltrate
-            # the top bar
-            # So in general calling the "erase_action" should set the eraser to match whatever value is stored here, meaning this plugin has full control over the eraser
-            # There could also be another "toggle_eraser" action that essentially copies the brush settings to the eraser or vice versa
+    def apply_brush_state(self, state: BrushState) -> BrushState:
+        """Sets brush settings to match the given state"""
+        if self.eraser_active() == state.eraser_on:
+            return state
 
-            # Implement the straight-line action manually as well
+        current_settings = BrushSettings().loadSettings()
+        # toggling the eraser on
+        if state.eraser_on:
+            state.eraser_settings.applySettings()
+            state.brush_settings = current_settings
+        else:
+            state.eraser_settings = current_settings
+            state.brush_settings.applySettings()
+        self.verify_eraser_state()
+        return state
 
-            # Toggles eraser again if applying presets scrambled things
-            if self.eraser_active() != is_on:
-                Application.action("erase_action").trigger()
+    def apply_current_brush_state(self):
+        return self.apply_brush_state(self.get_current_brush_state())
 
     def activate_brush(self):
-        self.mode = BRUSH_MODE
+        print("Activating brush")
+        self.get_current_brush_state().eraser_on = False
         self.switch_to_brush()
+        self.apply_current_brush_state()
 
     def activate_eraser(self):
-        self.mode = ERASER_MODE
+        print("Activating eraser")
+        self.get_current_brush_state().eraser_on = True
         self.switch_to_brush()
-
-    def set_brush_settings(self):
-        """Assuming brush is the current tool, sets brush settings to match current state."""
-        if self.mode == BRUSH_MODE:
-            self.set_eraser_mode(False)
-        elif self.mode == ERASER_MODE:
-            self.set_eraser_mode(True)
+        self.apply_current_brush_state()
 
     def on_brush_toggled(self, toggled):
-        brush_active_tool = toggled
         # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
         if toggled:
-            self.set_brush_settings()
+            # self.set_brush_settings()
+            pass
         else:
-            if self.eraser_active():
-                self.mode == ERASER_MODE
-            else:
-                self.mode == BRUSH_MODE
-            self.set_eraser_mode(False)
+            print_dbg("Toggling away from brush so turning eraser off.")
+            self.get_current_brush_state().eraser_on = False
+            self.apply_current_brush_state()
+
+    def verify_eraser_state(self):
+        desired_state = self.get_current_brush_state().eraser_on
+        if self.get_eraser_button().isChecked() != desired_state:
+            self.get_eraser_button().setChecked(desired_state)
+        if desired_state != self.eraser_active():
+            Application.action("erase_action").trigger()
+
+        # print("Eraser state verified: ")
+        # print(f"Eraser should be {desired_state}")
+        # print(f"Button checked is {self.get_eraser_button().isChecked()}")
+        # print(f"Eraser action is {self.eraser_active()}")
+        # print("\n")
+        # if self.get_current_brush_state():
+        #     if toggled != self.get_current_brush_state().eraser_on:
+        #         print(
+        #             "ERASER SETTING DOES NOT MATCH"
+        #             f" {self.get_current_brush_state().eraser_on}, TOGGLING ACTION"
+        #         )
+        #         Application.action("erase_action").trigger()
+        #     if toggled != self.get_eraser_button().isChecked():
+        #         print(f"ERASER BUTTON DOES NOT MATCH {toggled}, SETTING CHECKED")
+        #         self.get_eraser_button().setChecked(toggled)
+
+    def on_eraser_action(self, toggled):
+        print(f"ERASER ACTION TRIGGERED TO {toggled}")
+        self.verify_eraser_state()
+
+    def on_eraser_button_clicked(self, toggled):
+        print(f"ERASER BUTTON CLICKED {toggled}\n\n\n\n\n\n\n")
+
+    def on_eraser_button_toggled(self, toggled):
+        print(f"ERASER BUTTON TOGGLED TO {toggled}")
+        self.verify_eraser_state()
 
     def setup(self):
         pass
@@ -134,8 +161,19 @@ class SeparateBrushEraserExtension(Extension):
 
         QTimer.singleShot(500, self.bind_brush_toggled)
 
+    def get_eraser_button(self):
+        eraser_button = None
+        for item, depth in IterHierarchy(Application.activeWindow().qwindow()):
+            try:
+                if item.toolTip() == ERASER_BUTTON_TOOLTIP:
+                    eraser_button = item
+            except:
+                pass
+        return eraser_button
+
     def bind_brush_toggled(self):
         success = False
+        Application.action("erase_action").triggered.connect(self.on_eraser_action)
         for docker in Krita.instance().dockers():
             if docker.objectName() == "ToolBox":
                 for item, level in IterHierarchy(docker):
@@ -145,6 +183,14 @@ class SeparateBrushEraserExtension(Extension):
                         success = True
         if not success:
             print("Binding eraser toggle to brush button failed. Try restarting Krita.")
+        eraser_button = self.get_eraser_button()
+
+        eraser_button.toggled.connect(self.on_eraser_button_toggled)
+        eraser_button.clicked.connect(self.on_eraser_button_clicked)
+
+        # timer = QTimer(Application.activeWindow().qwindow())
+        # timer.timeout.connect(self.verify_eraser_state)
+        # timer.start(1)
 
 
 class IterHierarchy:
