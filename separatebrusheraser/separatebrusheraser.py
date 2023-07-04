@@ -91,13 +91,11 @@ class SeparateBrushEraserExtension(Extension):
         return self.apply_brush_state(self.get_current_brush_state())
 
     def activate_brush(self):
-        print("Activating brush")
         self.get_current_brush_state().eraser_on = False
         self.switch_to_brush()
         self.apply_current_brush_state()
 
     def activate_eraser(self):
-        print("Activating eraser")
         self.get_current_brush_state().eraser_on = True
         self.switch_to_brush()
         self.apply_current_brush_state()
@@ -105,44 +103,23 @@ class SeparateBrushEraserExtension(Extension):
     def on_brush_toggled(self, toggled):
         # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
         if toggled:
-            # self.set_brush_settings()
             pass
         else:
-            print_dbg("Toggling away from brush so turning eraser off.")
             self.get_current_brush_state().eraser_on = False
             self.apply_current_brush_state()
 
     def verify_eraser_state(self):
         if self.get_current_brush_state():
             desired_state = self.get_current_brush_state().eraser_on
-            # if self.get_eraser_button().isChecked() != desired_state:
-            #     self.get_eraser_button().setChecked(desired_state)
             if desired_state != self.eraser_active():
                 Application.action("erase_action").trigger()
 
-        # print("Eraser state verified: ")
-        # print(f"Eraser should be {desired_state}")
-        # print(f"Button checked is {self.get_eraser_button().isChecked()}")
-        # print(f"Eraser action is {self.eraser_active()}")
-        # print("\n")
-        # if self.get_current_brush_state():
-        #     if toggled != self.get_current_brush_state().eraser_on:
-        #         print(
-        #             "ERASER SETTING DOES NOT MATCH"
-        #             f" {self.get_current_brush_state().eraser_on}, TOGGLING ACTION"
-        #         )
-        #         Application.action("erase_action").trigger()
-        #     if toggled != self.get_eraser_button().isChecked():
-        #         print(f"ERASER BUTTON DOES NOT MATCH {toggled}, SETTING CHECKED")
-        #         self.get_eraser_button().setChecked(toggled)
-
     def on_eraser_action(self, toggled):
-        print(f"ERASER ACTION TRIGGERED TO {toggled}")
+        pass
         # self.get_eraser_button().setChecked(self.eraser_active())
         # self.verify_eraser_state()
 
     def on_eraser_button_clicked(self, toggled):
-        print(f"ERASER BUTTON CLICKED {toggled}\n\n\n\n\n\n\n")
         self.verify_eraser_state()
         if toggled:
             self.activate_eraser()
@@ -150,7 +127,6 @@ class SeparateBrushEraserExtension(Extension):
             self.activate_brush()
 
     def on_eraser_button_toggled(self, toggled):
-        print(f"ERASER BUTTON TOGGLED TO {toggled}")
         self.get_eraser_button().setChecked(self.eraser_active())
         # self.verify_eraser_state()
 
