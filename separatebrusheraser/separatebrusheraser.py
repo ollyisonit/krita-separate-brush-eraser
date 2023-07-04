@@ -90,14 +90,16 @@ class SeparateBrushEraserExtension(Extension):
     def apply_current_brush_state(self):
         return self.apply_brush_state(self.get_current_brush_state())
 
-    def activate_brush(self):
+    def activate_brush(self, switchTool=True):
         self.get_current_brush_state().eraser_on = False
-        self.switch_to_brush()
+        if switchTool:
+            self.switch_to_brush()
         self.apply_current_brush_state()
 
-    def activate_eraser(self):
+    def activate_eraser(self, switchTool=True):
         self.get_current_brush_state().eraser_on = True
-        self.switch_to_brush()
+        if switchTool:
+            self.switch_to_brush()
         self.apply_current_brush_state()
 
     def on_brush_toggled(self, toggled):
@@ -119,12 +121,25 @@ class SeparateBrushEraserExtension(Extension):
         # self.get_eraser_button().setChecked(self.eraser_active())
         # self.verify_eraser_state()
 
-    def on_eraser_button_clicked(self, toggled):
+    def classic_krita_eraser_toggle(self, toggled):
         self.verify_eraser_state()
+        # toggled = self.get_current_brush_state().eraser_on
+        brushset = self.get_current_brush_state().brush_settings
+        eraserset = self.get_current_brush_state().eraser_settings
+        self.get_current_brush_state().brush_settings = eraserset
+        self.get_current_brush_state().eraser_settings = brushset
         if toggled:
-            self.activate_eraser()
+            self.get_current_brush_state().eraser_on = True
+            self.get_current_brush_state().eraser_settings.applySettings()
         else:
-            self.activate_brush()
+            self.get_current_brush_state().eraser_on = False
+            self.get_current_brush_state().brush_settings.applySettings()
+
+    def on_eraser_button_clicked(self, toggled):
+        # Actually I think it would be better if this toggled like regular krita
+        # i.e. swap the brush presets, then toggle eraser without switching tool
+        # actually don't swap the brush presets but to toggle eraser without switching tool
+        self.classic_krita_eraser_toggle(toggled)
 
     def on_eraser_button_toggled(self, toggled):
         self.get_eraser_button().setChecked(self.eraser_active())
