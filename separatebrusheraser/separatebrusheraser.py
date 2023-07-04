@@ -124,16 +124,10 @@ class SeparateBrushEraserExtension(Extension):
     def classic_krita_eraser_toggle(self, toggled):
         self.verify_eraser_state()
         # toggled = self.get_current_brush_state().eraser_on
-        brushset = self.get_current_brush_state().brush_settings
-        eraserset = self.get_current_brush_state().eraser_settings
-        self.get_current_brush_state().brush_settings = eraserset
-        self.get_current_brush_state().eraser_settings = brushset
         if toggled:
-            self.get_current_brush_state().eraser_on = True
-            self.get_current_brush_state().eraser_settings.applySettings()
+            self.activate_eraser(False)
         else:
-            self.get_current_brush_state().eraser_on = False
-            self.get_current_brush_state().brush_settings.applySettings()
+            self.activate_brush(False)
 
     def on_eraser_button_clicked(self, toggled):
         # Actually I think it would be better if this toggled like regular krita
@@ -149,14 +143,19 @@ class SeparateBrushEraserExtension(Extension):
         pass
 
     def createActions(self, window):
+        # actions should be:
+        # Switch to brush / switch to eraser, which activate the brush tool
+        # Activate brush / eraser, which switch without activating the brush tool
+        # Toggle, which toggles between the two options without switching the tool
+        # A 'when you hold shift temporarily switch to the line tool without deactivating eraser' action
         activate_brush_action = window.createAction(
             BRUSH_ACTION, "Activate Brush", MENU_LOCATION
         )
         activate_eraser_action = window.createAction(
             ERASE_ACTION, "Activate Eraser", MENU_LOCATION
         )
-        activate_brush_action.triggered.connect(self.activate_brush)
-        activate_eraser_action.triggered.connect(self.activate_eraser)
+        activate_brush_action.triggered.connect(partial(self.activate_brush, True))
+        activate_eraser_action.triggered.connect(partial(self.activate_eraser, True))
 
         QTimer.singleShot(500, self.bind_brush_toggled)
 
