@@ -113,11 +113,12 @@ class SeparateBrushEraserExtension(Extension):
             self.apply_current_brush_state()
 
     def verify_eraser_state(self):
-        desired_state = self.get_current_brush_state().eraser_on
-        if self.get_eraser_button().isChecked() != desired_state:
-            self.get_eraser_button().setChecked(desired_state)
-        if desired_state != self.eraser_active():
-            Application.action("erase_action").trigger()
+        if self.get_current_brush_state():
+            desired_state = self.get_current_brush_state().eraser_on
+            if self.get_eraser_button().isChecked() != desired_state:
+                self.get_eraser_button().setChecked(desired_state)
+            if desired_state != self.eraser_active():
+                Application.action("erase_action").trigger()
 
         # print("Eraser state verified: ")
         # print(f"Eraser should be {desired_state}")
@@ -171,6 +172,14 @@ class SeparateBrushEraserExtension(Extension):
                 pass
         return eraser_button
 
+    def print_state(self):
+        if self.get_current_brush_state():
+            desired_state = self.get_current_brush_state().eraser_on
+            print(f"Eraser should be {desired_state}")
+            print(f"Button checked is {self.get_eraser_button().isChecked()}")
+            print(f"Eraser action is {self.eraser_active()}")
+            print("\n")
+
     def bind_brush_toggled(self):
         success = False
         Application.action("erase_action").triggered.connect(self.on_eraser_action)
@@ -188,9 +197,9 @@ class SeparateBrushEraserExtension(Extension):
         eraser_button.toggled.connect(self.on_eraser_button_toggled)
         eraser_button.clicked.connect(self.on_eraser_button_clicked)
 
-        # timer = QTimer(Application.activeWindow().qwindow())
-        # timer.timeout.connect(self.verify_eraser_state)
-        # timer.start(1)
+        timer = QTimer(Application.activeWindow().qwindow())
+        timer.timeout.connect(self.verify_eraser_state)
+        timer.start(3000)
 
 
 class IterHierarchy:
