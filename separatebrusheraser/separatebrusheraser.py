@@ -10,6 +10,7 @@ MENU_LOCATION = "tools/scripts/brush and eraser"
 BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
 
+# Uses this tooltip text to identify the eraser button
 ERASER_BUTTON_TOOLTIP = "Set eraser mode"
 
 DEBUG = True
@@ -95,12 +96,14 @@ class SeparateBrushEraserExtension(Extension):
         if switchTool:
             self.switch_to_brush()
         self.apply_current_brush_state()
+        QTimer.singleShot(0, self.verify_eraser_state)
 
     def activate_eraser(self, switchTool=True):
         self.get_current_brush_state().eraser_on = True
         if switchTool:
             self.switch_to_brush()
         self.apply_current_brush_state()
+        QTimer.singleShot(0, self.verify_eraser_state)
 
     def on_brush_toggled(self, toggled):
         # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
