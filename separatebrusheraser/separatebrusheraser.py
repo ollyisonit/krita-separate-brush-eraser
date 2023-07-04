@@ -201,7 +201,7 @@ class SeparateBrushEraserExtension(Extension):
 
         timer = QTimer(Application.activeWindow().qwindow())
         timer.timeout.connect(self.verify_eraser_state)
-        timer.start(3000)
+        timer.start(1)
 
 
 class IterHierarchy:
