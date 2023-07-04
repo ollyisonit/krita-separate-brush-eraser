@@ -115,8 +115,8 @@ class SeparateBrushEraserExtension(Extension):
     def verify_eraser_state(self):
         if self.get_current_brush_state():
             desired_state = self.get_current_brush_state().eraser_on
-            if self.get_eraser_button().isChecked() != desired_state:
-                self.get_eraser_button().setChecked(desired_state)
+            # if self.get_eraser_button().isChecked() != desired_state:
+            #     self.get_eraser_button().setChecked(desired_state)
             if desired_state != self.eraser_active():
                 Application.action("erase_action").trigger()
 
@@ -138,14 +138,16 @@ class SeparateBrushEraserExtension(Extension):
 
     def on_eraser_action(self, toggled):
         print(f"ERASER ACTION TRIGGERED TO {toggled}")
-        self.verify_eraser_state()
+        # self.get_eraser_button().setChecked(self.eraser_active())
+        # self.verify_eraser_state()
 
     def on_eraser_button_clicked(self, toggled):
         print(f"ERASER BUTTON CLICKED {toggled}\n\n\n\n\n\n\n")
 
     def on_eraser_button_toggled(self, toggled):
         print(f"ERASER BUTTON TOGGLED TO {toggled}")
-        self.verify_eraser_state()
+        self.get_eraser_button().setChecked(self.eraser_active())
+        # self.verify_eraser_state()
 
     def setup(self):
         pass
