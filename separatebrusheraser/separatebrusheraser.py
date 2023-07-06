@@ -109,7 +109,10 @@ class SeparateBrushEraserExtension(Extension):
         # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
         if toggled:
             pass
+        elif QApplication.queryKeyboardModifiers() & Qt.ShiftModifier:
+            print("Keeping eraser on bc shift is down")
         else:
+            print("Turning off eraser bc shift is not down")
             self.get_current_brush_state().eraser_on = False
             self.apply_current_brush_state()
 
