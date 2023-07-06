@@ -6,7 +6,10 @@ from .api_krita import Krita as KritaAPI
 
 BRUSH_ACTION = "dninosores_activate_brush"
 ERASE_ACTION = "dninosores_activate_eraser"
-MENU_LOCATION = "tools/scripts/brush and eraser"
+ERASE_ON_ACTION = "dninosores_eraser_on"
+ERASE_OFF_ACTION = "dninosores_eraser_off"
+ERASE_TOGGLE_ACTION = "dninosores_eraser_toggle"
+MENU_LOCATION = "tools/scripts"
 BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
 
@@ -110,9 +113,10 @@ class SeparateBrushEraserExtension(Extension):
         if toggled:
             pass
         elif QApplication.queryKeyboardModifiers() & Qt.ShiftModifier:
-            print("Keeping eraser on bc shift is down")
+            pass
+            # print("Keeping eraser on bc shift is down")
         else:
-            print("Turning off eraser bc shift is not down")
+            # print("Turning off eraser bc shift is not down")
             self.get_current_brush_state().eraser_on = False
             self.apply_current_brush_state()
 
@@ -127,8 +131,11 @@ class SeparateBrushEraserExtension(Extension):
         # self.get_eraser_button().setChecked(self.eraser_active())
         # self.verify_eraser_state()
 
+    def classic_krita_eraser_toggle_auto(self):
+        self.classic_krita_eraser_toggle(not self.brush_state.eraser_on)
+
     def classic_krita_eraser_toggle(self, toggled):
-        self.verify_eraser_state()
+        # self.verify_eraser_state()
         # toggled = self.get_current_brush_state().eraser_on
         if toggled:
             self.activate_eraser(False)
@@ -136,12 +143,14 @@ class SeparateBrushEraserExtension(Extension):
             self.activate_brush(False)
 
     def on_eraser_button_clicked(self, toggled):
+        # print(f"Clicked with value {toggled}")
         # Actually I think it would be better if this toggled like regular krita
         # i.e. swap the brush presets, then toggle eraser without switching tool
         # actually don't swap the brush presets but to toggle eraser without switching tool
         self.classic_krita_eraser_toggle(toggled)
 
     def on_eraser_button_toggled(self, toggled):
+        # print(f"Button toggled with value {toggled}")
         self.get_eraser_button().setChecked(self.eraser_active())
         # self.verify_eraser_state()
 
@@ -155,13 +164,25 @@ class SeparateBrushEraserExtension(Extension):
         # Toggle, which toggles between the two options without switching the tool
         # A 'when you hold shift temporarily switch to the line tool without deactivating eraser' action
         activate_brush_action = window.createAction(
-            BRUSH_ACTION, "Activate Brush", MENU_LOCATION
+            BRUSH_ACTION, "Switch to Brush", MENU_LOCATION
         )
         activate_eraser_action = window.createAction(
-            ERASE_ACTION, "Activate Eraser", MENU_LOCATION
+            ERASE_ACTION, "Switch to Eraser", MENU_LOCATION
+        )
+        enable_eraser_action = window.createAction(
+            ERASE_ON_ACTION, "Activate Eraser", MENU_LOCATION
+        )
+        disable_eraser_action = window.createAction(
+            ERASE_OFF_ACTION, "Deactivate Eraser", MENU_LOCATION
+        )
+        toggle_eraser_action = window.createAction(
+            ERASE_TOGGLE_ACTION, "Toggle Eraser", MENU_LOCATION
         )
         activate_brush_action.triggered.connect(partial(self.activate_brush, True))
         activate_eraser_action.triggered.connect(partial(self.activate_eraser, True))
+        enable_eraser_action.triggered.connect(partial(self.activate_eraser, False))
+        disable_eraser_action.triggered.connect(partial(self.activate_brush, False))
+        toggle_eraser_action.triggered.connect(self.classic_krita_eraser_toggle_auto)
 
         QTimer.singleShot(500, self.bind_brush_toggled)
 

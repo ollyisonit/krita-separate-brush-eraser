@@ -5,9 +5,9 @@
 
         <Action name="dninosores_activate_brush">
             <icon></icon>
-            <text>Activate Brush</text>
-            <whatsThis>Activates brush tool as if separate from eraser.</whatsThis>
-            <toolTip>Activates brush tool as if separate from eraser.</toolTip>
+            <text>Switch to Brush</text>
+            <whatsThis>Switches to brush tool as if separate from eraser.</whatsThis>
+            <toolTip>Switches to brush tool as if separate from eraser.</toolTip>
             <iconText></iconText>
             <isCheckable>false</isCheckable>
             <statusTip></statusTip>
@@ -15,9 +15,39 @@
 
         <Action name="dninosores_activate_eraser">
             <icon></icon>
-            <text>Activate Eraser</text>
-            <whatsThis>Activates eraser tool as if separate from eraser.</whatsThis>
-            <toolTip>Activates eraser tool as if separate from eraser.</toolTip>
+            <text>Switch to Eraser</text>
+            <whatsThis>Switches to brush tool with eraser active as if separate tool.</whatsThis>
+            <toolTip>Switches to brush tool with eraser active as if separate tool.</toolTip>
+            <iconText></iconText>
+            <isCheckable>false</isCheckable>
+            <statusTip></statusTip>
+        </Action>
+
+        <Action name="dninosores_eraser_on">
+            <icon></icon>
+            <text>Enable Eraser</text>
+            <whatsThis>Activates eraser without switching tool</whatsThis>
+            <toolTip>Activates eraser without switching tool</toolTip>
+            <iconText></iconText>
+            <isCheckable>false</isCheckable>
+            <statusTip></statusTip>
+        </Action>
+
+        <Action name="dninosores_eraser_off">
+            <icon></icon>
+            <text>Disable Eraser</text>
+            <whatsThis>Deactivates eraser without switching tool</whatsThis>
+            <toolTip>Deactivates eraser without switching tool</toolTip>
+            <iconText></iconText>
+            <isCheckable>false</isCheckable>
+            <statusTip></statusTip>
+        </Action>
+
+        <Action name="dninosores_eraser_toggle">
+            <icon></icon>
+            <text>Toggle Eraser</text>
+            <whatsThis>Toggles eraser without switching tool.</whatsThis>
+            <toolTip>Toggles eraser without switching tool.</toolTip>
             <iconText></iconText>
             <isCheckable>false</isCheckable>
             <statusTip></statusTip>
