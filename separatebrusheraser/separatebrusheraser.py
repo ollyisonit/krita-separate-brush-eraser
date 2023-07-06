@@ -95,6 +95,8 @@ class SeparateBrushEraserExtension(Extension):
         return self.apply_brush_state(self.get_current_brush_state())
 
     def activate_brush(self, switchTool=True):
+        if not self.get_current_brush_state():
+            return
         self.get_current_brush_state().eraser_on = False
         if switchTool:
             self.switch_to_brush()
@@ -102,6 +104,8 @@ class SeparateBrushEraserExtension(Extension):
         QTimer.singleShot(0, self.verify_eraser_state)
 
     def activate_eraser(self, switchTool=True):
+        if not self.get_current_brush_state():
+            return
         self.get_current_brush_state().eraser_on = True
         if switchTool:
             self.switch_to_brush()
@@ -109,6 +113,8 @@ class SeparateBrushEraserExtension(Extension):
         QTimer.singleShot(0, self.verify_eraser_state)
 
     def on_brush_toggled(self, toggled):
+        if not self.get_current_brush_state():
+            return
         # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
         if toggled:
             pass
