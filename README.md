@@ -1,5 +1,15 @@
 # Krita Separate Brush and Eraser
-Adds hotkeys that you can use to activate brush and eraser as if they're separate tools. You can find them in the shortcuts menu under Scripts > Separate Brush and Eraser. To make the brush and eraser track size and opacity separately as well, go to the brush settings and untick 'Eraser switch size' and 'Eraser switch opacity' on the bottom left of the window.
+Makes Krita treat the brush and eraser as if they're separate tools. The brush and eraser keep track of presets, size, opacity, flow, etc separately.
+All added functions can be found under Tools > Separate Brush and Eraser in the shortcuts menu.
+- Activate Eraser: Turns the eraser on for the current tool and switches over to the current eraser preset
+- Activate Brush: Turns the brush on for the current tool and switches over to the current brush preset
+- Toggle Eraser: Toggles the eraser for the current tool without switching brush presets.
+- Switch to Brush: Switches to the brush tool in brush mode and switches over to the current brush preset
+- Switch to Eraser: Switches to the brush tool in erase mode and switches over to the current eraser preset
+
+If you click the eraser in the top bar, the eraser will toggle on/off for the current tool without changing presets (ie. what Krita does by default).
+
+If you switch from the brush tool to another tool the eraser will automatically be deactivated unless you're holding shift.
 
 **Input adapter library taken from shortcuts composer**
 
