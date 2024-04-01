@@ -11,7 +11,7 @@ If you click the eraser in the top bar, the eraser will toggle on/off for the cu
 
 If you switch from the brush tool to another tool the eraser will automatically be deactivated unless you're holding shift.
 
-**Input adapter library taken from shortcuts composer**
+**Uses input adapter library from [shortcuts composer](https://github.com/wojtryb/Shortcut-Composer)**
 
 ## Installation
 
