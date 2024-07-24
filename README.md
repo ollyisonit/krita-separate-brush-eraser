@@ -1,4 +1,7 @@
 # Krita Separate Brush and Eraser
+
+![](icon.jpg)
+
 Makes Krita treat the brush and eraser as if they're separate tools. The brush and eraser keep track of presets, size, opacity, flow, etc separately.
 All added functions can be found under Tools > Separate Brush and Eraser in the shortcuts menu.
 - Activate Eraser: Turns the eraser on for the current tool and switches over to the current eraser preset
