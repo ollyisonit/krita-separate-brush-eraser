@@ -25,6 +25,7 @@ def print_dbg(msg):
 
 
 class BrushSettings:
+
     def loadSettings(self):
         self.preset = KritaAPI.get_active_view().brush_preset
         self.size = KritaAPI.get_active_view().brush_size
@@ -60,10 +61,8 @@ class SeparateBrushEraserExtension(Extension):
         return Application.action("erase_action").isChecked()
 
     def get_current_brush_state(self):
-        if (
-            not KritaAPI.get_active_view()
-            or not Application.activeWindow().activeView().currentBrushPreset()
-        ):
+        if (not KritaAPI.get_active_view() or not Application.activeWindow().
+                activeView().currentBrushPreset()):
             return None
         if self.brush_state:
             return self.brush_state
@@ -169,32 +168,39 @@ class SeparateBrushEraserExtension(Extension):
         # Activate brush / eraser, which switch without activating the brush tool
         # Toggle, which toggles between the two options without switching the tool
         # A 'when you hold shift temporarily switch to the line tool without deactivating eraser' action
-        activate_brush_action = window.createAction(
-            BRUSH_ACTION, "Switch to Brush", MENU_LOCATION
-        )
-        activate_eraser_action = window.createAction(
-            ERASE_ACTION, "Switch to Eraser", MENU_LOCATION
-        )
-        enable_eraser_action = window.createAction(
-            ERASE_ON_ACTION, "Activate Eraser", MENU_LOCATION
-        )
-        disable_eraser_action = window.createAction(
-            ERASE_OFF_ACTION, "Deactivate Eraser", MENU_LOCATION
-        )
-        toggle_eraser_action = window.createAction(
-            ERASE_TOGGLE_ACTION, "Toggle Eraser", MENU_LOCATION
-        )
-        activate_brush_action.triggered.connect(partial(self.activate_brush, True))
-        activate_eraser_action.triggered.connect(partial(self.activate_eraser, True))
-        enable_eraser_action.triggered.connect(partial(self.activate_eraser, False))
-        disable_eraser_action.triggered.connect(partial(self.activate_brush, False))
-        toggle_eraser_action.triggered.connect(self.classic_krita_eraser_toggle_auto)
+        activate_brush_action = window.createAction(BRUSH_ACTION,
+                                                    "Switch to Brush",
+                                                    MENU_LOCATION)
+        activate_eraser_action = window.createAction(ERASE_ACTION,
+                                                     "Switch to Eraser",
+                                                     MENU_LOCATION)
+        enable_eraser_action = window.createAction(ERASE_ON_ACTION,
+                                                   "Activate Eraser",
+                                                   MENU_LOCATION)
+        disable_eraser_action = window.createAction(ERASE_OFF_ACTION,
+                                                    "Deactivate Eraser",
+                                                    MENU_LOCATION)
+        toggle_eraser_action = window.createAction(ERASE_TOGGLE_ACTION,
+                                                   "Toggle Eraser",
+                                                   MENU_LOCATION)
+        activate_brush_action.triggered.connect(
+            partial(self.activate_brush, True))
+        activate_eraser_action.triggered.connect(
+            partial(self.activate_eraser, True))
+        enable_eraser_action.triggered.connect(
+            partial(self.activate_eraser, False))
+        disable_eraser_action.triggered.connect(
+            partial(self.activate_brush, False))
+        toggle_eraser_action.triggered.connect(
+            self.classic_krita_eraser_toggle_auto)
 
         QTimer.singleShot(500, self.bind_brush_toggled)
 
     def get_eraser_button(self):
+        qwin = Application.activeWindow().qwindow()
+        pobj = qwin.findChild(QToolBar, 'BrushesAndStuff')
         eraser_button = None
-        for item, depth in IterHierarchy(Application.activeWindow().qwindow()):
+        for item, depth in IterHierarchy(pobj):
             try:
                 if item.toolTip() == ERASER_BUTTON_TOOLTIP:
                     eraser_button = item
@@ -212,7 +218,8 @@ class SeparateBrushEraserExtension(Extension):
 
     def bind_brush_toggled(self):
         success = False
-        Application.action("erase_action").triggered.connect(self.on_eraser_action)
+        Application.action("erase_action").triggered.connect(
+            self.on_eraser_action)
         for docker in Krita.instance().dockers():
             if docker.objectName() == "ToolBox":
                 for item, level in IterHierarchy(docker):
@@ -221,7 +228,9 @@ class SeparateBrushEraserExtension(Extension):
                         brush_tool.toggled.connect(self.on_brush_toggled)
                         success = True
         if not success:
-            print("Binding eraser toggle to brush button failed. Try restarting Krita.")
+            print(
+                "Binding eraser toggle to brush button failed. Try restarting Krita."
+            )
         eraser_button = self.get_eraser_button()
 
         eraser_button.toggled.connect(self.on_eraser_button_toggled)
