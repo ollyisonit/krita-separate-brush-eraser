@@ -4,6 +4,7 @@ from functools import partial
 from pprint import pprint
 from .api_krita import Krita as KritaAPI
 
+KRITA_ERASE_ACTION = "erase_action"
 BRUSH_ACTION = "dninosores_activate_brush"
 ERASE_ACTION = "dninosores_activate_eraser"
 ERASE_ON_ACTION = "dninosores_eraser_on"
@@ -12,9 +13,6 @@ ERASE_TOGGLE_ACTION = "dninosores_eraser_toggle"
 MENU_LOCATION = "tools/scripts"
 BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
-
-# Uses this tooltip text to identify the eraser button
-ERASER_BUTTON_TOOLTIP = "Set eraser mode"
 
 DEBUG = True
 
@@ -58,7 +56,7 @@ class SeparateBrushEraserExtension(Extension):
         Krita.instance().action("KritaShape/KisToolBrush").trigger()
 
     def eraser_active(self):
-        return Application.action("erase_action").isChecked()
+        return Application.action(KRITA_ERASE_ACTION).isChecked()
 
     def get_current_brush_state(self):
         if (not KritaAPI.get_active_view() or not Application.activeWindow().
@@ -129,7 +127,7 @@ class SeparateBrushEraserExtension(Extension):
         if self.get_current_brush_state():
             desired_state = self.get_current_brush_state().eraser_on
             if desired_state != self.eraser_active():
-                Application.action("erase_action").trigger()
+                Application.action(KRITA_ERASE_ACTION).trigger()
 
     def on_eraser_action(self, toggled):
         pass
@@ -202,7 +200,8 @@ class SeparateBrushEraserExtension(Extension):
         eraser_button = None
         for item, depth in IterHierarchy(pobj):
             try:
-                if item.toolTip() == ERASER_BUTTON_TOOLTIP:
+                if item.defaultAction() == Application.action(
+                        KRITA_ERASE_ACTION):
                     eraser_button = item
             except:
                 pass
@@ -218,7 +217,7 @@ class SeparateBrushEraserExtension(Extension):
 
     def bind_brush_toggled(self):
         success = False
-        Application.action("erase_action").triggered.connect(
+        Application.action(KRITA_ERASE_ACTION).triggered.connect(
             self.on_eraser_action)
         for docker in Krita.instance().dockers():
             if docker.objectName() == "ToolBox":
