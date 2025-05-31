@@ -2,17 +2,18 @@
 
 ![](icon.jpg)
 
-Makes Krita treat the brush and eraser as if they're separate tools. The brush and eraser keep track of presets, size, opacity, flow, etc separately.
-All added functions can be found under Tools > Separate Brush and Eraser in the shortcuts menu.
+Makes Krita treat the brush and eraser as if they’re separate tools. The brush and eraser keep track of presets, size, opacity, flow, etc separately. All added functions can be found under Tools > Separate Brush and Eraser in the shortcuts menu.
 - Activate Eraser: Turns the eraser on for the current tool and switches over to the current eraser preset
-- Activate Brush: Turns the brush on for the current tool and switches over to the current brush preset
+- Deactivate Eraser: Turns the eraser off for the current tool and switches over to the current brush preset
 - Toggle Eraser: Toggles the eraser for the current tool without switching brush presets (default krita behavior)
-- Switch to Brush: Switches to the brush tool in brush mode and activates the current brush preset
-- Switch to Eraser: Switches to the brush tool in erase mode and activates the current eraser preset
+- Switch to Brush: Switches to the freehand brush tool in brush mode and activates the current brush preset
+- Switch to Eraser: Switches to the freehand brush tool in erase mode and activates the current eraser preset
 
-If you click the eraser in the top bar, the eraser will toggle on/off for the current tool without changing presets (ie. what Krita does by default).
+I’d suggest binding hotkeys to Switch to Brush / Switch to Eraser, they most closely mimic the behavior of other painting programs.
 
-If you switch from the brush tool to another tool the eraser will automatically be deactivated unless you're holding shift.
+If you click the eraser in the top bar, the eraser will toggle on/off for the current tool without changing presets (ie. what Krita does by default). This is useful if you find yourself wanting to swap your current brush into erase mode in the normal Krita way.
+
+If you switch from the brush tool to another tool the eraser will automatically be deactivated unless you’re holding shift (this allows you to use the Photoshop-compatible shift-click for straight line shortcut).
 
 **Uses input adapter library from [shortcuts composer](https://github.com/wojtryb/Shortcut-Composer)**
 
@@ -21,3 +22,4 @@ If you switch from the brush tool to another tool the eraser will automatically 
 Download [separatebrusheraser.zip](http://github.com/dninosores/krita-separate-brush-eraser/releases/latest/download/separatebrusheraser.zip) and install by going to `Tools > Scripts > Import Python Plugin From File...` in Krita and selecting the zip file.
 
 If you're having issues, more information on plugin installation can be found [here](https://docs.krita.org/en/user_manual/python_scripting/install_custom_python_plugin.html).
+
