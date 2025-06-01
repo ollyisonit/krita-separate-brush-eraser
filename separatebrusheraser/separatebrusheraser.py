@@ -1,5 +1,5 @@
 from krita import Krita, Extension  # type: ignore
-from PyQt5.QtWidgets import QToolBar, QApplication, QToolButton
+from PyQt5.QtWidgets import QToolBar, QApplication, QToolButton, QMenu
 from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer
 from functools import partial
@@ -12,6 +12,7 @@ ERASE_ON_ACTION = "dninosores_eraser_on"
 ERASE_OFF_ACTION = "dninosores_eraser_off"
 ERASE_TOGGLE_ACTION = "dninosores_eraser_toggle"
 MENU_LOCATION = "tools/scripts"
+MENU_GROUP_NAME = "SeparateBrushEraser"
 BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
 
@@ -176,26 +177,34 @@ class SeparateBrushEraserExtension(Extension):
         pass
 
     def createActions(self, window):
+
+        # menu = QMenu(MENU_GROUP_NAME, window.qwindow())
         # actions should be:
         # Switch to brush / switch to eraser, which activate the brush tool
         # Activate brush / eraser, which switch without activating the brush tool
         # Toggle, which toggles between the two options without switching the tool
         # A 'when you hold shift temporarily switch to the line tool without deactivating eraser' action
-        activate_brush_action = window.createAction(BRUSH_ACTION,
-                                                    "Switch to Brush",
-                                                    MENU_LOCATION)
-        activate_eraser_action = window.createAction(ERASE_ACTION,
-                                                     "Switch to Eraser",
-                                                     MENU_LOCATION)
-        enable_eraser_action = window.createAction(ERASE_ON_ACTION,
-                                                   "Activate Eraser",
-                                                   MENU_LOCATION)
-        disable_eraser_action = window.createAction(ERASE_OFF_ACTION,
-                                                    "Deactivate Eraser",
-                                                    MENU_LOCATION)
-        toggle_eraser_action = window.createAction(ERASE_TOGGLE_ACTION,
-                                                   "Toggle Eraser",
-                                                   MENU_LOCATION)
+        menu_action = window.createAction(
+            MENU_GROUP_NAME, MENU_GROUP_NAME,
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
+        menu = QMenu(MENU_GROUP_NAME, window.qwindow())
+        menu_action.setMenu(menu)
+        activate_brush_action = window.createAction(
+            BRUSH_ACTION, "Switch to Brush",
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
+        activate_eraser_action = window.createAction(
+            ERASE_ACTION, "Switch to Eraser",
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
+        enable_eraser_action = window.createAction(
+            ERASE_ON_ACTION, "Activate Eraser",
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
+        disable_eraser_action = window.createAction(
+            ERASE_OFF_ACTION, "Deactivate Eraser",
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
+        toggle_eraser_action = window.createAction(
+            ERASE_TOGGLE_ACTION, "Toggle Eraser",
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
+
         activate_brush_action.triggered.connect(
             partial(self.activate_brush, True))
         activate_eraser_action.triggered.connect(
