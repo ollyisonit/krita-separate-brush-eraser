@@ -1,7 +1,8 @@
-from krita import *
-from PyQt5.QtWidgets import QWidget, QAction
+from krita import Krita, Extension  # type: ignore
+from PyQt5.QtWidgets import QToolBar, QApplication, QToolButton
+from PyQt5 import QtCore
+from PyQt5.QtCore import QTimer
 from functools import partial
-from pprint import pprint
 from .api_krita import Krita as KritaAPI
 
 KRITA_ERASE_ACTION = "erase_action"
@@ -42,8 +43,8 @@ class BrushSettings:
 class BrushState:
     # Store a brush state for each view
     eraser_on: bool = False
-    brush_settings: BrushSettings = None
-    eraser_settings: BrushSettings = None
+    brush_settings: BrushSettings | None = None
+    eraser_settings: BrushSettings | None = None
 
 
 class SeparateBrushEraserExtension(Extension):
@@ -80,21 +81,25 @@ class SeparateBrushEraserExtension(Extension):
         current_settings = BrushSettings().loadSettings()
         # toggling the eraser on
         if state.eraser_on:
-            state.eraser_settings.applySettings()
+            if state.eraser_settings:
+                state.eraser_settings.applySettings()
             state.brush_settings = current_settings
         else:
             state.eraser_settings = current_settings
-            state.brush_settings.applySettings()
+            if state.brush_settings:
+                state.brush_settings.applySettings()
         self.verify_eraser_state()
         return state
 
     def apply_current_brush_state(self):
-        return self.apply_brush_state(self.get_current_brush_state())
+        state = self.get_current_brush_state()
+        if state:
+            return self.apply_brush_state(state)
 
     def activate_brush(self, switchTool=True):
         if not self.get_current_brush_state():
             return
-        self.get_current_brush_state().eraser_on = False
+        self.get_current_brush_state().eraser_on = False  # type: ignore
         if switchTool:
             self.switch_to_brush()
         self.apply_current_brush_state()
@@ -103,29 +108,31 @@ class SeparateBrushEraserExtension(Extension):
     def activate_eraser(self, switchTool=True):
         if not self.get_current_brush_state():
             return
-        self.get_current_brush_state().eraser_on = True
+        self.get_current_brush_state().eraser_on = True  # type: ignore
         if switchTool:
             self.switch_to_brush()
         self.apply_current_brush_state()
         QTimer.singleShot(0, self.verify_eraser_state)
 
     def on_brush_toggled(self, toggled):
-        if not self.get_current_brush_state():
+        current_brush_state = self.get_current_brush_state()
+        if not current_brush_state:
             return
         # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
         if toggled:
             pass
-        elif QApplication.queryKeyboardModifiers() & Qt.ShiftModifier:
+        elif QApplication.queryKeyboardModifiers() & QtCore.Qt.Modifier.SHIFT:
             pass
             # print("Keeping eraser on bc shift is down")
         else:
             # print("Turning off eraser bc shift is not down")
-            self.get_current_brush_state().eraser_on = False
+            current_brush_state.eraser_on = False
             self.apply_current_brush_state()
 
     def verify_eraser_state(self):
-        if self.get_current_brush_state():
-            desired_state = self.get_current_brush_state().eraser_on
+        current_brush_state = self.get_current_brush_state()
+        if current_brush_state:
+            desired_state = current_brush_state.eraser_on
             if desired_state != self.eraser_active():
                 Application.action(KRITA_ERASE_ACTION).trigger()
 
@@ -135,7 +142,8 @@ class SeparateBrushEraserExtension(Extension):
         # self.verify_eraser_state()
 
     def classic_krita_eraser_toggle_auto(self):
-        self.classic_krita_eraser_toggle(not self.brush_state.eraser_on)
+        if self.brush_state:
+            self.classic_krita_eraser_toggle(not self.brush_state.eraser_on)
 
     def classic_krita_eraser_toggle(self, toggled):
         # self.verify_eraser_state()
@@ -153,8 +161,10 @@ class SeparateBrushEraserExtension(Extension):
         self.classic_krita_eraser_toggle(toggled)
 
     def on_eraser_button_toggled(self, toggled):
-        # print(f"Button toggled with value {toggled}")
-        self.get_eraser_button().setChecked(self.eraser_active())
+        # print(f"Button toggled with value {toggled}")'
+        eraser_button = self.get_eraser_button()
+        if eraser_button:
+            eraser_button.setChecked(self.eraser_active())
         # self.verify_eraser_state()
 
     def setup(self):
@@ -194,7 +204,7 @@ class SeparateBrushEraserExtension(Extension):
 
         QTimer.singleShot(500, self.bind_brush_toggled)
 
-    def get_eraser_button(self):
+    def get_eraser_button(self) -> QToolButton | None:
         qwin = Application.activeWindow().qwindow()
         pobj = qwin.findChild(QToolBar, 'BrushesAndStuff')
         eraser_button = None
@@ -203,15 +213,20 @@ class SeparateBrushEraserExtension(Extension):
                 if item.defaultAction() == Application.action(
                         KRITA_ERASE_ACTION):
                     eraser_button = item
-            except:
+            except Exception:
                 pass
         return eraser_button
 
     def print_state(self):
-        if self.get_current_brush_state():
-            desired_state = self.get_current_brush_state().eraser_on
+        current_brush_state = self.get_current_brush_state()
+        eraser_button = self.get_eraser_button()
+        if current_brush_state:
+            desired_state = current_brush_state.eraser_on
             print(f"Eraser should be {desired_state}")
-            print(f"Button checked is {self.get_eraser_button().isChecked()}")
+            if eraser_button:
+                print(f"Button checked is {eraser_button.isChecked()}")
+            else:
+                print("Eraser button not found!")
             print(f"Eraser action is {self.eraser_active()}")
             print("\n")
 
@@ -231,10 +246,13 @@ class SeparateBrushEraserExtension(Extension):
                 "Binding eraser toggle to brush button failed. Try restarting Krita."
             )
         eraser_button = self.get_eraser_button()
-
-        eraser_button.toggled.connect(self.on_eraser_button_toggled)
-        eraser_button.clicked.connect(self.on_eraser_button_clicked)
-
+        if eraser_button:
+            eraser_button.toggled.connect(self.on_eraser_button_toggled)
+            eraser_button.clicked.connect(self.on_eraser_button_clicked)
+        else:
+            print(
+                "Binding eraser toggle to erase button failed. Try restarting Krita."
+            )
         timer = QTimer(Application.activeWindow().qwindow())
         timer.timeout.connect(self.verify_eraser_state)
         timer.start(1)
