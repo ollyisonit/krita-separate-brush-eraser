@@ -23,6 +23,11 @@ def print_dbg(msg):
         print(msg)
 
 
+def get_action(name: str):
+    """Wrapper for non-type-safe getting action from Krita instance."""
+    return Krita.instance().action(name)
+
+
 class BrushSettings:
 
     def loadSettings(self):
@@ -54,14 +59,14 @@ class SeparateBrushEraserExtension(Extension):
         super().__init__(parent)
 
     def switch_to_brush(self):
-        Krita.instance().action("KritaShape/KisToolBrush").trigger()
+        KritaAPI.trigger_action("KritaShape/KisToolBrush")
 
     def eraser_active(self):
-        return Application.action(KRITA_ERASE_ACTION).isChecked()
+        return get_action(KRITA_ERASE_ACTION).isChecked()
 
     def get_current_brush_state(self):
-        if (not KritaAPI.get_active_view() or not Application.activeWindow().
-                activeView().currentBrushPreset()):
+        if (not KritaAPI.get_active_view() or not Krita.instance().
+                activeWindow().activeView().currentBrushPreset()):
             return None
         if self.brush_state:
             return self.brush_state
@@ -134,7 +139,7 @@ class SeparateBrushEraserExtension(Extension):
         if current_brush_state:
             desired_state = current_brush_state.eraser_on
             if desired_state != self.eraser_active():
-                Application.action(KRITA_ERASE_ACTION).trigger()
+                KritaAPI.trigger_action(KRITA_ERASE_ACTION)
 
     def on_eraser_action(self, toggled):
         pass
@@ -205,13 +210,12 @@ class SeparateBrushEraserExtension(Extension):
         QTimer.singleShot(500, self.bind_brush_toggled)
 
     def get_eraser_button(self) -> QToolButton | None:
-        qwin = Application.activeWindow().qwindow()
+        qwin = KritaAPI.get_active_qwindow()
         pobj = qwin.findChild(QToolBar, 'BrushesAndStuff')
         eraser_button = None
         for item, depth in IterHierarchy(pobj):
             try:
-                if item.defaultAction() == Application.action(
-                        KRITA_ERASE_ACTION):
+                if item.defaultAction() == get_action(KRITA_ERASE_ACTION):
                     eraser_button = item
             except Exception:
                 pass
@@ -232,7 +236,7 @@ class SeparateBrushEraserExtension(Extension):
 
     def bind_brush_toggled(self):
         success = False
-        Application.action(KRITA_ERASE_ACTION).triggered.connect(
+        Krita.instance().action(KRITA_ERASE_ACTION).triggered.connect(
             self.on_eraser_action)
         for docker in Krita.instance().dockers():
             if docker.objectName() == "ToolBox":
@@ -253,7 +257,7 @@ class SeparateBrushEraserExtension(Extension):
             print(
                 "Binding eraser toggle to erase button failed. Try restarting Krita."
             )
-        timer = QTimer(Application.activeWindow().qwindow())
+        timer = QTimer(KritaAPI.get_active_qwindow())
         timer.timeout.connect(self.verify_eraser_state)
         timer.start(1)
 
