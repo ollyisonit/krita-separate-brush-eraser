@@ -25,9 +25,9 @@
 
         <Action name="dninosores_eraser_on">
             <icon></icon>
-            <text>Activate Eraser</text>
-            <whatsThis>Activates eraser mode without switching tools</whatsThis>
-            <toolTip>Activates eraser mode without switching tools</toolTip>
+            <text>Activate Eraser Preset for Current Tool</text>
+            <whatsThis>Activates eraser preset without switching tools</whatsThis>
+            <toolTip>Activates eraser preset without switching tools</toolTip>
             <iconText></iconText>
             <isCheckable>false</isCheckable>
             <statusTip></statusTip>
@@ -35,9 +35,9 @@
 
         <Action name="dninosores_eraser_off">
             <icon></icon>
-            <text>Activate Brush</text>
-            <whatsThis>Activates brush mode without switching tools</whatsThis>
-            <toolTip>Activates brush mode without switching tools</toolTip>
+            <text>Activate Brush Preset for Current Tool</text>
+            <whatsThis>Activates brush preset without switching tools</whatsThis>
+            <toolTip>Activates brush preset without switching tools</toolTip>
             <iconText></iconText>
             <isCheckable>false</isCheckable>
             <statusTip></statusTip>
@@ -45,10 +45,9 @@
 
         <Action name="dninosores_eraser_toggle">
             <icon></icon>
-            <text>Toggle Eraser</text>
-            <whatsThis>Toggles eraser without switching tool or brush preset (default Krita
-                behavior)</whatsThis>
-            <toolTip>Toggles eraser without switching tool or brush preset (default Krita behavior)</toolTip>
+            <text>Toggle Eraser Preset for Current Tool</text>
+            <whatsThis>Toggles between brush and eraser presets without switching tools</whatsThis>
+            <toolTip>Toggles between brush and eraser presets without switching tools</toolTip>
             <iconText></iconText>
             <isCheckable>false</isCheckable>
             <statusTip></statusTip>

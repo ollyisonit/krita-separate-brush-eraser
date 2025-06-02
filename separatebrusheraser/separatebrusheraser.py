@@ -199,13 +199,13 @@ class SeparateBrushEraserExtension(Extension):
             ERASE_ACTION, "Switch to Freehand Eraser",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
         enable_eraser_action = window.createAction(
-            ERASE_ON_ACTION, "Activate Eraser for Current Tool",
+            ERASE_ON_ACTION, "Activate Eraser Preset for Current Tool",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
         disable_eraser_action = window.createAction(
-            ERASE_OFF_ACTION, "Activate Brush for Current Tool",
+            ERASE_OFF_ACTION, "Activate Brush Preset for Current Tool",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
         toggle_eraser_action = window.createAction(
-            ERASE_TOGGLE_ACTION, "Toggle Eraser Mode",
+            ERASE_TOGGLE_ACTION, "Toggle Eraser Preset for Current Tool",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
 
         activate_brush_action.triggered.connect(
