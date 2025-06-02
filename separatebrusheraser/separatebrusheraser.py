@@ -1,9 +1,11 @@
 from krita import Krita, Extension  # type: ignore
 from PyQt5.QtWidgets import QToolBar, QApplication, QToolButton, QMenu
 from PyQt5 import QtCore
-from PyQt5.QtCore import QTimer
+from PyQt5 import QtGui
+from PyQt5.QtCore import QTimer, QObject, QEvent, Qt
 from functools import partial
 from .api_krita import Krita as KritaAPI
+from .api_krita.enums import Tool
 
 KRITA_ERASE_ACTION = "erase_action"
 BRUSH_ACTION = "dninosores_activate_brush"
@@ -176,6 +178,19 @@ class SeparateBrushEraserExtension(Extension):
     def setup(self):
         pass
 
+    class LineModifierFilter(QObject):
+
+        def eventFilter(self, a0: QObject | None, a1: QEvent | None) -> bool:
+            event = a1
+            if event and isinstance(event, QtGui.QKeyEvent):
+                # if shift is the ONLY key down and the current tool is freehand brush, switch to line tool and set tmp_line flag to true
+                # if shift is not the ONLY key down and the tmp_line flag is true, switch to freehand brush and set tmp_line flag to false
+                if KritaAPI.active_tool == Tool.FREEHAND_BRUSH and event.key(
+                ) == Qt.Key.Key_Shift:
+                    KritaAPI.active_tool = Tool.LINE
+                    print("Swap to line")
+            return False
+
     def createActions(self, window):
 
         # menu = QMenu(MENU_GROUP_NAME, window.qwindow())
@@ -215,6 +230,19 @@ class SeparateBrushEraserExtension(Extension):
             partial(self.activate_brush, False))
         toggle_eraser_action.triggered.connect(
             self.classic_krita_eraser_toggle_auto)
+
+        appNotifier = KritaAPI.instance.notifier()
+        appNotifier.setActive(True)
+
+        def installLineModifierFilter(_view: QObject):
+            self.filter = SeparateBrushEraserExtension.LineModifierFilter()
+            for item, level in IterHierarchy(
+                    KritaAPI.instance.activeWindow().qwindow()):
+                if item.metaObject().className() == "Viewport":
+                    print("Installing line modifier filter")
+                    item.installEventFilter(self.filter)
+
+        appNotifier.viewCreated.connect(installLineModifierFilter)
 
         QTimer.singleShot(500, self.bind_brush_toggled)
 
