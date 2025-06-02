@@ -17,7 +17,7 @@ MENU_GROUP_NAME = "SeparateBrushEraser"
 BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
 
-DEBUG = True
+DEBUG = False
 
 
 def print_dbg(msg):
@@ -61,6 +61,7 @@ class SeparateBrushEraserExtension(Extension):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.filter = LineModifierFilter(self, Qt.Key.Key_Shift)
 
     def switch_to_brush(self):
         KritaAPI.trigger_action("KritaShape/KisToolBrush")
@@ -222,11 +223,11 @@ class SeparateBrushEraserExtension(Extension):
         appNotifier.setActive(True)
 
         def installLineModifierFilter(_view: QObject):
-            self.filter = LineModifierFilter(self, Qt.Key.Key_Shift)
             for item, level in IterHierarchy(
                     KritaAPI.instance.activeWindow().qwindow()):
                 if item.metaObject().className() == "Viewport":
-                    print("Installing line modifier filter")
+                    print_dbg("Installing line modifier filter")
+                    item.removeEventFilter(self.filter)
                     item.installEventFilter(self.filter)
 
         appNotifier.viewCreated.connect(installLineModifierFilter)
@@ -302,10 +303,12 @@ class LineModifierFilter(QObject):
         if event and isinstance(event, QtGui.QKeyEvent):
             if KritaAPI.active_tool == Tool.FREEHAND_BRUSH and event.key(
             ) == self.modifier_key and event.type() == QEvent.Type.KeyPress:
+                print_dbg("event filter activated")
                 self.extension.tmp_line_activation = True
                 KritaAPI.active_tool = Tool.LINE
             if KritaAPI.active_tool == Tool.LINE and event.key(
             ) == self.modifier_key and event.type() == QEvent.Type.KeyRelease:
+                print_dbg("event filter activated")
                 if self.extension.tmp_line_activation:
                     KritaAPI.active_tool = Tool.FREEHAND_BRUSH
                     self.extension.tmp_line_activation = False
