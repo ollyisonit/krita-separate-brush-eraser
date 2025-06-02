@@ -57,6 +57,8 @@ class BrushState:
 
 class SeparateBrushEraserExtension(Extension):
     brush_state = None
+    # Toggled on when the line tool is temporarily activated by modifier key
+    tmp_line_activation: bool = False
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -129,11 +131,10 @@ class SeparateBrushEraserExtension(Extension):
         # Triggers when krita switches to/from the brush tool for any reason. Does not trigger if the brush tool is already selected.
         if toggled:
             pass
-        elif QApplication.queryKeyboardModifiers() & QtCore.Qt.Modifier.SHIFT:
+        # Don't switch eraser state if we're activating the line tool temporarily with modifier key
+        elif self.tmp_line_activation:
             pass
-            # print("Keeping eraser on bc shift is down")
         else:
-            # print("Turning off eraser bc shift is not down")
             current_brush_state.eraser_on = False
             self.apply_current_brush_state()
 
@@ -177,19 +178,6 @@ class SeparateBrushEraserExtension(Extension):
 
     def setup(self):
         pass
-
-    class LineModifierFilter(QObject):
-
-        def eventFilter(self, a0: QObject | None, a1: QEvent | None) -> bool:
-            event = a1
-            if event and isinstance(event, QtGui.QKeyEvent):
-                # if shift is the ONLY key down and the current tool is freehand brush, switch to line tool and set tmp_line flag to true
-                # if shift is not the ONLY key down and the tmp_line flag is true, switch to freehand brush and set tmp_line flag to false
-                if KritaAPI.active_tool == Tool.FREEHAND_BRUSH and event.key(
-                ) == Qt.Key.Key_Shift:
-                    KritaAPI.active_tool = Tool.LINE
-                    print("Swap to line")
-            return False
 
     def createActions(self, window):
 
@@ -235,7 +223,7 @@ class SeparateBrushEraserExtension(Extension):
         appNotifier.setActive(True)
 
         def installLineModifierFilter(_view: QObject):
-            self.filter = SeparateBrushEraserExtension.LineModifierFilter()
+            self.filter = LineModifierFilter(self, Qt.Key.Key_Shift)
             for item, level in IterHierarchy(
                     KritaAPI.instance.activeWindow().qwindow()):
                 if item.metaObject().className() == "Viewport":
@@ -297,6 +285,32 @@ class SeparateBrushEraserExtension(Extension):
         timer = QTimer(KritaAPI.get_active_qwindow())
         timer.timeout.connect(self.verify_eraser_state)
         timer.start(1)
+
+
+class LineModifierFilter(QObject):
+    """EventFilter that listens for a certain modifier key and tells the extension to temporarily switch to the line tool when it the key is pressed."""
+    extension: SeparateBrushEraserExtension
+    modifier_key: int = Qt.Key.Key_Shift
+
+    def __init__(self, extension: SeparateBrushEraserExtension,
+                 modifier_key: int):
+        super().__init__()
+        self.extension = extension
+        self.modifier_key = modifier_key
+
+    def eventFilter(self, a0: QObject | None, a1: QEvent | None) -> bool:
+        event = a1
+        if event and isinstance(event, QtGui.QKeyEvent):
+            if KritaAPI.active_tool == Tool.FREEHAND_BRUSH and event.key(
+            ) == self.modifier_key and event.type() == QEvent.Type.KeyPress:
+                self.extension.tmp_line_activation = True
+                KritaAPI.active_tool = Tool.LINE
+            if KritaAPI.active_tool == Tool.LINE and event.key(
+            ) == self.modifier_key and event.type() == QEvent.Type.KeyRelease:
+                if self.extension.tmp_line_activation:
+                    KritaAPI.active_tool = Tool.FREEHAND_BRUSH
+                    self.extension.tmp_line_activation = False
+        return False
 
 
 class IterHierarchy:
