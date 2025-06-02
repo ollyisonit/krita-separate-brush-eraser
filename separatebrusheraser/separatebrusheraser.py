@@ -1,6 +1,5 @@
 from krita import Krita, Extension  # type: ignore
-from PyQt5.QtWidgets import QToolBar, QApplication, QToolButton, QMenu
-from PyQt5 import QtCore
+from PyQt5.QtWidgets import QToolBar, QToolButton, QMenu
 from PyQt5 import QtGui
 from PyQt5.QtCore import QTimer, QObject, QEvent, Qt
 from functools import partial
