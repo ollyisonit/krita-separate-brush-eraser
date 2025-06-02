@@ -193,19 +193,19 @@ class SeparateBrushEraserExtension(Extension):
         menu = QMenu(MENU_GROUP_NAME, window.qwindow())
         menu_action.setMenu(menu)
         activate_brush_action = window.createAction(
-            BRUSH_ACTION, "Switch to Brush",
+            BRUSH_ACTION, "Switch to Freehand Brush",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
         activate_eraser_action = window.createAction(
-            ERASE_ACTION, "Switch to Eraser",
+            ERASE_ACTION, "Switch to Freehand Eraser",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
         enable_eraser_action = window.createAction(
-            ERASE_ON_ACTION, "Activate Eraser",
+            ERASE_ON_ACTION, "Activate Eraser for Current Tool",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
         disable_eraser_action = window.createAction(
-            ERASE_OFF_ACTION, "Deactivate Eraser",
+            ERASE_OFF_ACTION, "Activate Brush for Current Tool",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
         toggle_eraser_action = window.createAction(
-            ERASE_TOGGLE_ACTION, "Toggle Eraser",
+            ERASE_TOGGLE_ACTION, "Toggle Eraser Mode",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
 
         activate_brush_action.triggered.connect(
