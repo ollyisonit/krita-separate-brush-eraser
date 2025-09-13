@@ -22,3 +22,11 @@ Download [separatebrusheraser.zip](http://github.com/dninosores/krita-separate-b
 
 If you're having issues, more information on plugin installation can be found [here](https://docs.krita.org/en/user_manual/python_scripting/install_custom_python_plugin.html).
 
+# Brush preset tag linking
+
+This is meant to emulate the functionality of the tool preset panel from Photoshop and how clip studio handles brushes.
+
+This option can be enabled by navigating to the settings panels `Tools > Scripts > Brush Eraser Settings` and enabling the checkbox `Link a brush preset tag with the brush and eraser`.
+The Dropdown options below allow you to select which preset tag will be linked with the brush and eraser respectively.
+
+<img width="321" height="175" alt="image" src="https://github.com/user-attachments/assets/d56cfa55-8317-4d74-a1b9-9a887aa4ef85" />
