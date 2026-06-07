@@ -4,13 +4,14 @@
 from krita import Krita as Api, Extension, qApp
 from typing import Callable, Protocol, Any, Dict, Optional
 
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QDesktopWidget,
-    QWidgetAction,
-    QMdiArea)
-from PyQt5.QtGui import QKeySequence, QColor, QIcon
-from PyQt5.QtCore import QTimer
+from ..qt_compat import QtCore, QtGui, QtWidgets, get_screen_width
+QTimer = QtCore.QTimer
+QKeySequence, QColor, QIcon = QtGui.QKeySequence, QtGui.QColor, QtGui.QIcon
+QMainWindow, QWidgetAction, QMdiArea = (
+    QtWidgets.QMainWindow,
+    QtWidgets.QWidgetAction,
+    QtWidgets.QMdiArea,
+)
 
 from .wrappers import (
     ToolDescriptor,
@@ -29,7 +30,7 @@ class KritaInstance:
 
     def __init__(self) -> None:
         self.instance = Api.instance()
-        self.screen_size = QDesktopWidget().screenGeometry(-1).width()
+        self.screen_size = get_screen_width()
         self.main_window: Any = None
 
     def get_active_view(self) -> View:

@@ -9,7 +9,8 @@ key_release events.
 from dataclasses import dataclass
 from typing import Dict
 
-from PyQt5.QtWidgets import QWidgetAction
+from ..qt_compat import QtWidgets
+QWidgetAction = QtWidgets.QWidgetAction
 
 from .api_krita import Krita
 from .complex_action_interface import ComplexActionInterface

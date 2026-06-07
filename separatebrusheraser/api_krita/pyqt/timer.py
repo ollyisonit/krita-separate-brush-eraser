@@ -3,7 +3,8 @@
 
 from typing import Callable
 
-from PyQt5.QtCore import QTimer
+from ...qt_compat import QtCore
+QTimer = QtCore.QTimer
 
 EmptyCallback = Callable[[], None]
 

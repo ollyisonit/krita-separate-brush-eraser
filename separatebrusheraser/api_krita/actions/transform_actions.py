@@ -4,13 +4,12 @@
 from typing import Dict, Optional
 from functools import partial, partialmethod
 
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import (
-    QWidgetAction,
-    QToolButton,
-    QPushButton,
-    QWidget,
-)
+from ...qt_compat import QtCore, QtWidgets
+QTimer = QtCore.QTimer
+QWidgetAction = QtWidgets.QWidgetAction
+QToolButton = QtWidgets.QToolButton
+QPushButton = QtWidgets.QPushButton
+QWidget = QtWidgets.QWidget
 
 from ..enums import Tool, TransformMode
 from ..core_api import KritaInstance

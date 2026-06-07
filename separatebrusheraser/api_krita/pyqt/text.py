@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from dataclasses import dataclass, field
-from PyQt5.QtGui import QColor
+from ...qt_compat import QtGui
+QColor = QtGui.QColor
 
 
 @dataclass

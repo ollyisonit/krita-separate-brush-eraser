@@ -4,9 +4,15 @@
 import math
 from typing import Optional
 
-from PyQt5.QtGui import QPainter, QPainterPath, QColor, QPixmap, QPaintEvent
-from PyQt5.QtCore import QPoint, QRectF
-from PyQt5.QtWidgets import QWidget
+from ...qt_compat import QtCore, QtGui, QtWidgets, QPainter
+QPainterPath, QColor, QPixmap, QPaintEvent = (
+    QtGui.QPainterPath,
+    QtGui.QColor,
+    QtGui.QPixmap,
+    QtGui.QPaintEvent,
+)
+QPoint, QRectF = QtCore.QPoint, QtCore.QRectF
+QWidget = QtWidgets.QWidget
 
 
 class Painter:

@@ -3,9 +3,11 @@
 
 from typing import Optional
 
-from PyQt5.QtWidgets import QWidget, QPushButton
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtCore import Qt
+from ...qt_compat import QtCore, QtGui, QtWidgets, Qt
+QWidget = QtWidgets.QWidget
+QPushButton = QtWidgets.QPushButton
+QColor = QtGui.QColor
+QIcon = QtGui.QIcon
 
 from .custom_widgets import BaseWidget
 

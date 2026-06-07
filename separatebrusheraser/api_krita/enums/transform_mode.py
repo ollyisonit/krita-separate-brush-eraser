@@ -4,7 +4,8 @@
 from krita import Krita as Api
 from enum import Enum
 
-from PyQt5.QtGui import QIcon
+from ...qt_compat import QtGui
+QIcon = QtGui.QIcon
 
 
 class TransformMode(Enum):

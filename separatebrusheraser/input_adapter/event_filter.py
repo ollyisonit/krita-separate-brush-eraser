@@ -3,8 +3,9 @@
 
 from typing import Callable, List, Literal
 
-from PyQt5.QtCore import QEvent
-from PyQt5.QtWidgets import QMdiArea
+from ..qt_compat import QtCore, QtWidgets
+QEvent = QtCore.QEvent
+QMdiArea = QtWidgets.QMdiArea
 
 EventCallback = Callable[[QEvent], None]
 
@@ -31,7 +32,7 @@ class ReleaseKeyEventFilter(QMdiArea):
         Always return False to let the event reach its desired
         destination.
         """
-        if event.type() == QEvent.KeyRelease:
+        if event.type() == QEvent.Type.KeyRelease:
             for callback in self._release_callbacks:
                 callback(event)
 

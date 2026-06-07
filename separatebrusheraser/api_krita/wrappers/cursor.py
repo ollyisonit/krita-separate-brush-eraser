@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from dataclasses import dataclass
-from PyQt5.QtWidgets import QMainWindow
+from ...qt_compat import QtWidgets
+QMainWindow = QtWidgets.QMainWindow
 
 
 @dataclass

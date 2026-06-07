@@ -3,7 +3,9 @@
 
 from time import time
 
-from PyQt5.QtGui import QKeyEvent, QKeySequence
+from ..qt_compat import QtGui, to_int
+QKeyEvent = QtGui.QKeyEvent
+QKeySequence = QtGui.QKeySequence
 
 from .api_krita import Krita
 from .complex_action_interface import ComplexActionInterface
@@ -69,7 +71,7 @@ class ShortcutAdapter:
 
     @staticmethod
     def _key_sequence_from_event(event: QKeyEvent):
-        return QKeySequence(event.modifiers() | event.key())  # type: ignore
+        return QKeySequence(to_int(event.modifiers()) | to_int(event.key()))  # type: ignore
 
     @staticmethod
     def _match_shortcuts(_a: QKeySequence, _b: QKeySequence, /) -> bool:

@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from krita import Krita as Api
-from PyQt5.QtWidgets import QWidget, QToolButton
+from ...qt_compat import QtWidgets
+QWidget, QToolButton = QtWidgets.QWidget, QtWidgets.QToolButton
 
 from ..enums import Tool
 

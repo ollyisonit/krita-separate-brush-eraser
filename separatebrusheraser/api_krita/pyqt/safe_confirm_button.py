@@ -1,8 +1,9 @@
 from typing import Optional
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSignal, QEvent
-from PyQt5.QtWidgets import QWidget, QPushButton
+from ...qt_compat import QtCore, QtGui, QtWidgets
+QIcon = QtGui.QIcon
+pyqtSignal, QEvent = QtCore.pyqtSignal, QtCore.QEvent
+QWidget, QPushButton = QtWidgets.QWidget, QtWidgets.QPushButton
 
 
 class SafeConfirmButton(QPushButton):
