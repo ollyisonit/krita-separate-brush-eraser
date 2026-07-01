@@ -4,13 +4,10 @@
 from krita import Krita as Api, Extension, qApp
 from typing import Callable, Protocol, Any, Dict, Optional
 
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QDesktopWidget,
-    QWidgetAction,
-    QMdiArea)
-from PyQt5.QtGui import QKeySequence, QColor, QIcon
-from PyQt5.QtCore import QTimer
+from qtpy.QtWidgets import (QMainWindow, QDesktopWidget, QWidgetAction,
+                            QMdiArea)
+from qtpy.QtGui import QKeySequence, QColor, QIcon
+from qtpy.QtCore import QTimer
 
 from .wrappers import (
     ToolDescriptor,
@@ -144,4 +141,4 @@ class KritaWindow(Protocol):
         name: str,
         description: str,
         menu: str, /
-    ) -> QWidgetAction: ...
+    ) -> QWidgetAction:        ...

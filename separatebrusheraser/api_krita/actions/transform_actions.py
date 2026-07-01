@@ -4,8 +4,8 @@
 from typing import Dict, Optional
 from functools import partial, partialmethod
 
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import (
+from qtpy.QtCore import QTimer
+from qtpy.QtWidgets import (
     QWidgetAction,
     QToolButton,
     QPushButton,

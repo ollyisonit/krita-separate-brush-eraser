@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: © 2022-2023 Wojciech Trybus <wojtryb@gmail.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import QPoint
+from qtpy.QtWidgets import QWidget
+from qtpy.QtCore import QPoint
 
 from .timer import Timer
 

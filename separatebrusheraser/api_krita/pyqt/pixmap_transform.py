@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: © 2022-2023 Wojciech Trybus <wojtryb@gmail.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import (
+from qtpy.QtCore import Qt
+from qtpy.QtGui import (
     QPainter,
     QPixmap,
     QImage,

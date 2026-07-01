@@ -6,19 +6,16 @@
 from krita import Krita as Api
 from typing import Callable, Protocol
 
-from PyQt5.QtWidgets import QWidgetAction
-from PyQt5.QtGui import QKeySequence
+from qtpy.QtWidgets import QWidgetAction
+from qtpy.QtGui import QKeySequence
 
 
 class KritaWindow(Protocol):
     """Krita window received in createActions() of main extension file."""
 
-    def createAction(
-        self,
-        name: str,
-        description: str,
-        menu: str, /
-    ) -> QWidgetAction: ...
+    def createAction(self, name: str, description: str, menu: str,
+                     /) -> QWidgetAction:
+        ...
 
 
 class KritaInstance:

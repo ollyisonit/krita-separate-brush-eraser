@@ -3,8 +3,8 @@
 
 from typing import Callable, List, Literal
 
-from PyQt5.QtCore import QEvent
-from PyQt5.QtWidgets import QMdiArea
+from qtpy.QtCore import QEvent
+from qtpy.QtWidgets import QMdiArea
 
 EventCallback = Callable[[QEvent], None]
 

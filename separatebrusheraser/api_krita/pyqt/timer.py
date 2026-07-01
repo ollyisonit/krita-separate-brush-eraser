@@ -3,13 +3,13 @@
 
 from typing import Callable
 
-from PyQt5.QtCore import QTimer
+from qtpy.QtCore import QTimer
 
 EmptyCallback = Callable[[], None]
 
 
 class Timer:
-    """Wraps PyQt5 QTimer to simplify init interface."""
+    """Wraps QTimer to simplify init interface."""
 
     def __init__(self, target: EmptyCallback, interval_ms: int) -> None:
         self._timer = QTimer()

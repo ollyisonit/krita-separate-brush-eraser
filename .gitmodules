@@ -1,0 +1,3 @@
+[submodule "separatebrusheraser/qtpy"]
+	path = separatebrusheraser/qtpy
+	url = https://github.com/spyder-ide/qtpy.git
