@@ -1,5 +1,5 @@
 from krita import Krita, Extension  # type: ignore
-from .qtpy.qtpy.QtWidgets import QToolBar, QToolButton, QMenu
+from .qtpy.qtpy.QtWidgets import QToolBar, QToolButton, QMenu, QActionGroup
 from .qtpy.qtpy import QtGui
 from .qtpy.qtpy.QtCore import QTimer, QObject, QEvent, Qt
 from functools import partial
@@ -13,10 +13,23 @@ ERASE_ON_ACTION = "dninosores_eraser_on"
 ERASE_OFF_ACTION = "dninosores_eraser_off"
 ERASE_TOGGLE_ACTION = "dninosores_eraser_toggle"
 ERASE_NATIVE_TOGGLE_ACTION = "dninosores_eraser_toggle_native"
+LINE_MODIFIER_ACTION = "dninosores_line_modifier"
 MENU_LOCATION = "tools/scripts"
 MENU_GROUP_NAME = "SeparateBrushEraser"
 BRUSH_MODE = "BRUSH"
 ERASER_MODE = "ERASER"
+
+# Persisted config for the line tool modifier key.
+CONFIG_GROUP = "SeparateBrushEraser"
+LINE_MODIFIER_SETTING = "line_modifier_key"
+# Available modifier keys the user can pick for temporary line tool activation.
+# "None" disables the temporary line tool feature entirely.
+LINE_MODIFIER_KEYS = {
+    "Shift": Qt.Key.Key_Shift,
+    "Ctrl": Qt.Key.Key_Control,
+    "None": None,
+}
+DEFAULT_LINE_MODIFIER = "None"
 
 DEBUG = False
 
@@ -62,7 +75,20 @@ class SeparateBrushEraserExtension(Extension):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.filter = LineModifierFilter(self, Qt.Key.Key_Shift)
+        key_name = KritaAPI.read_setting(
+            CONFIG_GROUP, LINE_MODIFIER_SETTING, DEFAULT_LINE_MODIFIER)
+        if key_name not in LINE_MODIFIER_KEYS:
+            key_name = DEFAULT_LINE_MODIFIER
+        self.line_modifier_name = key_name
+        self.filter = LineModifierFilter(self, LINE_MODIFIER_KEYS[key_name])
+
+    def set_line_modifier(self, key_name: str):
+        """Update the line tool modifier key and persist the choice."""
+        if key_name not in LINE_MODIFIER_KEYS:
+            return
+        self.line_modifier_name = key_name
+        self.filter.modifier_key = LINE_MODIFIER_KEYS[key_name]
+        KritaAPI.write_setting(CONFIG_GROUP, LINE_MODIFIER_SETTING, key_name)
 
     def switch_to_brush(self):
         KritaAPI.trigger_action("KritaShape/KisToolBrush")
@@ -241,6 +267,23 @@ class SeparateBrushEraserExtension(Extension):
         native_toggle_eraser_action.triggered.connect(
             self.native_eraser_toggle)
 
+        # Submenu letting the user choose which modifier key temporarily
+        # activates the line tool.
+        line_modifier_menu_action = window.createAction(
+            LINE_MODIFIER_ACTION, "Line Tool Modifier Key",
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
+        line_modifier_menu = QMenu("Line Tool Modifier Key", window.qwindow())
+        line_modifier_menu_action.setMenu(line_modifier_menu)
+        modifier_group = QActionGroup(window.qwindow())
+        modifier_group.setExclusive(True)
+        for key_name in LINE_MODIFIER_KEYS:
+            modifier_action = line_modifier_menu.addAction(key_name)
+            modifier_action.setCheckable(True)
+            modifier_action.setChecked(key_name == self.line_modifier_name)
+            modifier_action.setActionGroup(modifier_group)
+            modifier_action.triggered.connect(
+                partial(self.set_line_modifier, key_name))
+
         appNotifier = KritaAPI.instance.notifier()
         appNotifier.setActive(True)
 
@@ -312,16 +355,19 @@ class SeparateBrushEraserExtension(Extension):
 class LineModifierFilter(QObject):
     """EventFilter that listens for a certain modifier key and tells the extension to temporarily switch to the line tool when it the key is pressed."""
     extension: SeparateBrushEraserExtension
-    modifier_key: int = Qt.Key.Key_Shift
+    modifier_key: int | None
 
     def __init__(self, extension: SeparateBrushEraserExtension,
-                 modifier_key: int):
+                 modifier_key: int | None):
         super().__init__()
         self.extension = extension
         self.modifier_key = modifier_key
 
     def eventFilter(self, a0: QObject | None, a1: QEvent | None) -> bool:
         event = a1
+        # A modifier key of None means the temporary line tool is disabled.
+        if self.modifier_key is None:
+            return False
         if event and isinstance(event, QtGui.QKeyEvent):
             if KritaAPI.active_tool == Tool.FREEHAND_BRUSH and event.key(
             ) == self.modifier_key and event.type() == QEvent.Type.KeyPress:
