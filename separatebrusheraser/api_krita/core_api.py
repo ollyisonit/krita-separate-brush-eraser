@@ -1,11 +1,13 @@
 # SPDX-FileCopyrightText: © 2022-2023 Wojciech Trybus <wojtryb@gmail.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from krita import Krita as Api, Extension, qApp
+from krita import Krita as Api, Extension
 from typing import Callable, Protocol, Any, Dict, Optional
 
-from qtpy.QtWidgets import (QMainWindow, QDesktopWidget, QWidgetAction,
+from qtpy import QtWidgets
+from qtpy.QtWidgets import (QMainWindow, QWidgetAction,
                             QMdiArea)
+from qtpy.QtGui import QGuiApplication
 from qtpy.QtGui import QKeySequence, QColor, QIcon
 from qtpy.QtCore import QTimer
 
@@ -26,8 +28,12 @@ class KritaInstance:
 
     def __init__(self) -> None:
         self.instance = Api.instance()
-        self.screen_size = QDesktopWidget().screenGeometry(-1).width()
+        # self.screen_size = QGuiApplication().primaryScreen().geometry().width()
         self.main_window: Any = None
+
+        app = QGuiApplication.instance()
+        screen = app.primaryScreen() if app else None
+        self.screen_size = screen.geometry().width() if screen else 0
 
     def get_active_view(self) -> View:
         """Return wrapper of krita `View`."""
@@ -129,7 +135,7 @@ class KritaInstance:
     @property
     def is_light_theme_active(self) -> bool:
         """Return if currently set theme is light using it's main color."""
-        main_color: QColor = qApp.palette().window().color()
+        main_color: QColor = QtWidgets.QApplication.instance().palette().window().color()
         return main_color.value() > 128
 
 
