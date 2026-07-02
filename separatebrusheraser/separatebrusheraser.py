@@ -12,6 +12,7 @@ ERASE_ACTION = "dninosores_activate_eraser"
 ERASE_ON_ACTION = "dninosores_eraser_on"
 ERASE_OFF_ACTION = "dninosores_eraser_off"
 ERASE_TOGGLE_ACTION = "dninosores_eraser_toggle"
+ERASE_NATIVE_TOGGLE_ACTION = "dninosores_eraser_toggle_native"
 MENU_LOCATION = "tools/scripts"
 MENU_GROUP_NAME = "SeparateBrushEraser"
 BRUSH_MODE = "BRUSH"
@@ -162,6 +163,22 @@ class SeparateBrushEraserExtension(Extension):
         else:
             self.activate_brush(False)
 
+    def native_eraser_toggle(self):
+        """Mimics Krita's default eraser toggle: flips erase mode for the
+        current tool without swapping brush/eraser presets or any other
+        settings."""
+        state = self.get_current_brush_state()
+        if not state:
+            # No tracked brush state (e.g. no active view); fall back to the
+            # raw Krita action so the shortcut still does something sensible.
+            KritaAPI.trigger_action(KRITA_ERASE_ACTION)
+            return
+        # Flip the desired state and let verify_eraser_state sync Krita's
+        # erase_action to match. We deliberately skip apply_brush_state so no
+        # presets/size/opacity get swapped.
+        state.eraser_on = not state.eraser_on
+        self.verify_eraser_state()
+
     def on_eraser_button_clicked(self, toggled):
         # print(f"Clicked with value {toggled}")
         # Actually I think it would be better if this toggled like regular krita
@@ -207,6 +224,9 @@ class SeparateBrushEraserExtension(Extension):
         toggle_eraser_action = window.createAction(
             ERASE_TOGGLE_ACTION, "Toggle Eraser Preset for Current Tool",
             MENU_LOCATION + "/" + MENU_GROUP_NAME)
+        native_toggle_eraser_action = window.createAction(
+            ERASE_NATIVE_TOGGLE_ACTION, "Toggle Eraser for Current Tool (native)",
+            MENU_LOCATION + "/" + MENU_GROUP_NAME)
 
         activate_brush_action.triggered.connect(
             partial(self.activate_brush, True))
@@ -218,6 +238,8 @@ class SeparateBrushEraserExtension(Extension):
             partial(self.activate_brush, False))
         toggle_eraser_action.triggered.connect(
             self.classic_krita_eraser_toggle_auto)
+        native_toggle_eraser_action.triggered.connect(
+            self.native_eraser_toggle)
 
         appNotifier = KritaAPI.instance.notifier()
         appNotifier.setActive(True)

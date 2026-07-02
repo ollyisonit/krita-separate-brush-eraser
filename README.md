@@ -7,8 +7,10 @@ Makes Krita treat the brush and eraser as if they’re separate tools. The brush
 - `Switch to Freehand Eraser`: Switches to the freehand brush tool in erase mode and activates the current eraser preset
 - `Activate Eraser Preset for Current Tool`: Activates eraser preset without switching tools.
 - `Activate Brush Preset for Current Tool`: Activates brush preset without switching tools
-- `Toggle Eraser Preset for Current Tool`: Toggles between brush and eraser presets without switching tools
+- `Toggle Eraser Preset for Current Tool`: Toggles between current brush and eraser presets without switching tools
+- `Toggle Eraser for Current Tool`: Toggles the eraser on/off for the current tool without changing presets or any other settings (ie. what Krita does by default)
 
+**Note**: This plugin overrides Krita's default eraser behavior, so the built-in eraser shortcut will no longer work. If you want to have a hotkey that mimics Krita's built-in way of handling eraser toggling, bind that shortcut to **Toggle Eraser for Current Tool**.
 
 I’d suggest binding hotkeys to `Switch to Freehand Brush` / `Switch to Freehand Eraser`, they most closely mimic the behavior of other painting programs.
 
