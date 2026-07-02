@@ -3,11 +3,12 @@
 ![](icon.jpg)
 
 Makes Krita treat the brush and eraser as if they’re separate tools. The brush and eraser keep track of presets, size, opacity, flow, etc separately. All added functions can be found under `Tools > Separate Brush and Eraser` in the shortcuts menu.
+
 - `Switch to Freehand Brush`: Switches to the freehand brush tool in brush mode and activates the current brush preset
 - `Switch to Freehand Eraser`: Switches to the freehand brush tool in erase mode and activates the current eraser preset
-- `Activate Eraser Preset for Current Tool`: Activates eraser preset without switching tools.
-- `Activate Brush Preset for Current Tool`: Activates brush preset without switching tools
-- `Toggle Eraser Preset for Current Tool`: Toggles between current brush and eraser presets without switching tools
+- `Activate Eraser Preset for Current Tool`: Activates eraser preset without switching tools (e.g. square tool, circle tool, etc)
+- `Activate Brush Preset for Current Tool`: Activates brush preset without switching tools (e.g. square tool, circle tool, etc)
+- `Toggle Eraser Preset for Current Tool`: Toggles between brush and eraser presets without switching tools (e.g. square tool, circle tool, etc)
 - `Toggle Eraser for Current Tool`: Toggles the eraser on/off for the current tool without changing presets or any other settings (ie. what Krita does by default)
 
 **Note**: This plugin overrides Krita's default eraser behavior, so the built-in eraser shortcut will no longer work. If you want to have a hotkey that mimics Krita's built-in way of handling eraser toggling, bind that shortcut to **Toggle Eraser for Current Tool**.
@@ -15,6 +16,11 @@ Makes Krita treat the brush and eraser as if they’re separate tools. The brush
 I’d suggest binding hotkeys to `Switch to Freehand Brush` / `Switch to Freehand Eraser`, they most closely mimic the behavior of other painting programs.
 
 If you click the eraser in the top bar, the eraser will toggle on/off for the current tool without changing presets (ie. what Krita does by default). This is useful if you find yourself wanting to swap your current brush into erase mode in the normal Krita way.
+## Line Tool Modifier Key
+Binding a modifier key to the line tool in Krita's canvas input settings overwrites the behavior of that key globally, which prevents it from being used for other tasks. For example, if you use those settings to bind `Shift` to the line tool, you can no longer use `Shift` to select multiple objects. This plugin allows you to use either `Shift` or `Alt` as a modifier key for the line tool only when the brush tool is active, so it doesnt' affect any other functionality. To enable this:
+
+1. Disable any line tool modifier shortcuts that were set in the Canvas Input settings
+2. Enable the line tool modifier key at `Tools > Scripts > SeparateBrushEraser > Line Tool Modifier Key`
 
 **Uses input adapter library from [shortcuts composer](https://github.com/wojtryb/Shortcut-Composer)**
 
