@@ -35,3 +35,6 @@ Download [separatebrusheraser.zip](http://github.com/dninosores/krita-separate-b
 
 If you're having issues, more information on plugin installation can be found [here](https://docs.krita.org/en/user_manual/python_scripting/install_custom_python_plugin.html).
 
+
+I don’t have a ton of time to maintain this anymore, so forks are always welcome if you want to make any customizations or fixes.
+
